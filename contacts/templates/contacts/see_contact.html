@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{%block content%}
+<h1 class="mt-5">{{ contact.name }} {{ contact.surname }}</h1>
+<dl>
+    <dt>ID</dt>
+    <dd>{{ contact.id }}</dd>
+
+    <dt>Phone Number</dt>
+    <dd>{{ contact.phone_number }}</dd>
+
+    <dt>E-mail</dt>
+    <dd>{{ contact.email }}</dd>
+
+    <dt>Creation Date</dt>
+    <dd>{{ contact.creation_date }}</dd>
+
+    <dt>category</dt>
+    <dd>{{ contact.category }}</dd>
+
+    <dt>Description</dt>
+    <dd>
+        {{ contact.description }}
+    </dd>
+</dl>
+
+{%endblock%}
