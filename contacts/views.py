@@ -1,8 +1,9 @@
+from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q, Value
 from django.db.models.functions import Concat
 from django.http import Http404
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 
 from .models import Contact
 
@@ -33,31 +34,36 @@ def see_contact(request, contact_id):
 
 
 def search(request):
-        term = request.GET.get('term')
+    term = request.GET.get('term')
 
-        if term is None or not term:
-             raise Http404
+    if term is None or not term:
+            messages.add_message(
+                request, 
+                messages.ERROR,
+                'Campo termo não pode ficar vazio.'
+        )
+            return redirect('index')
 
-        fields = Concat('name',Value(' '), 'surname')
+    fields = Concat('name',Value(' '), 'surname')
 
-        contacts = Contact.objects.annotate(
-             full_name=fields
-        ).filter(
-             Q(full_name__icontains=term) | Q(phone_number__icontains=term)
+    contacts = Contact.objects.annotate(
+            full_name=fields
+    ).filter(
+        Q(full_name__icontains=term) | Q(phone_number__icontains=term)
         )
 
-        print(term)
+    print(term)
 
         # contacts = Contact.objects.order_by('-id').filter(
         #     Q(name__icontains = term) | Q(surname__icontains=term),
         #     show=True
         # )
-        paginator = Paginator(contacts, 2)
+    paginator = Paginator(contacts, 2)
 
-        page_number = request.GET.get('p')
-        contacts = paginator.get_page(page_number)
+    page_number = request.GET.get('p')
+    contacts = paginator.get_page(page_number)
 
-        return render(request, 'contacts/search.html', {
-            'contacts': contacts
-        })
+    return render(request, 'contacts/search.html', {
+        'contacts': contacts
+    })
 

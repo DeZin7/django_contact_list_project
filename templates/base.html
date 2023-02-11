@@ -21,6 +21,8 @@
                         <div class="col-12">
                             <input class="form-control" type="search" value="{{ request.GET.term }}" id="search-input"
                                 placeholder="Type your search" name="term">
+                            {% include 'partials/_messages.html' %}
+
                         </div>
                     </div>
                 </form>
