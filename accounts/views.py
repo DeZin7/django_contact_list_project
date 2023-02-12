@@ -1,15 +1,32 @@
-from django.contrib import messages
+from django.contrib import auth, messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.validators import validate_email
 from django.shortcuts import redirect, render
 
 
 def login(request):
-    return render(request, 'accounts/login.html')
+    if request.method != 'POST':
+        return render(request, 'accounts/login.html')
+    
+    user = request.POST.get('user')
+    password = request.POST.get('password')
+
+    user_check = auth.authenticate(request, username=user, password=password)
+
+    if not user_check:
+        messages.error(request, 'Invalid user or password.')
+        return render(request, 'accounts/login.html')
+    else:
+        auth.login(request, user_check)
+        messages.success(request, 'You have successfully logged in.')
+        return redirect('dashboard') 
+
 
 
 def logout(request):
-    return render(request, 'accounts/logout.html')
+    auth.logout(request)
+    return redirect('index')
 
 
 def register(request):
@@ -58,7 +75,7 @@ def register(request):
     user.save()
     return redirect('login')
 
-
+@login_required(redirect_field_name='login') #in case that the user isn't logged in, the user will be redirected to login
 def dashboard(request):
     return render(request, 'accounts/dashboard.html')
 
