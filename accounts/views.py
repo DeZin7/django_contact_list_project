@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 from django.core.validators import validate_email
 from django.shortcuts import redirect, render
 
+from .models import ContactForm
+
 
 def login(request):
     if request.method != 'POST':
@@ -77,6 +79,27 @@ def register(request):
 
 @login_required(redirect_field_name='login') #in case that the user isn't logged in, the user will be redirected to login
 def dashboard(request):
-    return render(request, 'accounts/dashboard.html')
+    if request.method != 'POST':
+        form = ContactForm()
+        return render(request, 'accounts/dashboard.html', {'form': form})
+    
+    form = ContactForm(request.POST, request.FILES)
+
+    if not form.is_valid():
+        messages.error(request, 'Error submitting form.')
+        form = ContactForm(request.POST)
+        return render(request, 'accounts/dashboard.html', {'form': form})
+    
+    description = request.POST.get('description')
+
+    if len(description) < 5:
+        messages.error(request, 'Error submitting form.')
+        form = ContactForm(request.POST)
+        return render(request, 'accounts/dashboard.html', {'form': form})
+    
+    form.save()
+    messages.success(request, f'Contact {request.POST.get("name")} saved.')
+    return redirect('dashboard')
+
 
 # Create your views here.

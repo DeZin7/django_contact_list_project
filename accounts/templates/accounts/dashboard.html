@@ -8,4 +8,17 @@
 <p>
     Your user name is {{ user }}.
 </p>
+
+<div class="container">
+    <form action="" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <table class="table">
+            {{form}}
+            <tr>
+                <td colspan="2">
+                    <button type="submit" class="btn btn-primary">Send</button>
+                </td>
+            </tr>
+    </form>
+</div>
 {% endblock %}
